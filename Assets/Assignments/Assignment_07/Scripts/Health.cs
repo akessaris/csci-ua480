@@ -69,9 +69,6 @@ namespace A07_ank352
 
                 // Set the player’s position to the chosen spawn point
                 transform.position = spawnPoint;
-                PlayerController.Instance.newPosition = transform.position;
-                PlayerController.Instance.initialPosition = transform.position;
-
             }
         }
     }

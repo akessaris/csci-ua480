@@ -10,12 +10,6 @@ namespace A07_ank352
         public GameObject bulletPrefab;
         public Transform bulletSpawn;
 
-        public float smooth = 2.0F;
-        public float tiltAngle = 30.0F;
-
-        public Vector3 initialPosition;
-        public Vector3 newPosition;
-
         public static A07_ank352.PlayerController Instance;
 
         private void Awake()
@@ -24,19 +18,11 @@ namespace A07_ank352
             if (Instance == null)
             {
                 Instance = this;
-                initialPosition = transform.position;
-                newPosition = initialPosition;
-                transform.position = newPosition;
             }
             else if (Instance != this)
             {
                 Destroy(this);
             }
-        }
-
-        public void Translate(Vector3 translation)
-        {
-            transform.Translate(translation, Space.World);
         }
 
         void Update()
@@ -45,21 +31,24 @@ namespace A07_ank352
             {
                 return;
             }
+            transform.rotation = Camera.main.transform.rotation;
 
             if (Input.GetMouseButton(0))
             {
                 CmdFire();
                 Vector3 forward = transform.forward;
                 forward.y = 0;
-                transform.position += newPosition + transform.position * Time.deltaTime * 10.0f;
+
+                Vector3 newPosition = forward * Time.deltaTime * 5.0f + transform.position;
 
                 //Constrain movement
-                newPosition = transform.position;
                 newPosition.x = Mathf.Clamp(newPosition.x, -10, 10);
                 newPosition.z = Mathf.Clamp(newPosition.z, -10, 10);
-                newPosition.y = 0;
+
+                transform.position = newPosition;
+                Camera.main.transform.position = transform.position;
             }
-            transform.position = newPosition;
+            Camera.main.transform.position = transform.position;
         }
 
 
@@ -68,14 +57,11 @@ namespace A07_ank352
         [Command]
         void CmdFire()
         {
-            Vector3 playerPosition = newPosition;
-            playerPosition += transform.forward;
-
             // Create the Bullet from the Bullet Prefab
             var bullet = (GameObject)Instantiate(
                 bulletPrefab,
-                playerPosition,
-                transform.rotation);
+                bulletSpawn.position,
+                bulletSpawn.rotation);
 
             // Add velocity to the bullet
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
@@ -90,6 +76,11 @@ namespace A07_ank352
         public override void OnStartLocalPlayer()
         {
             GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+            //Camera.main.transform.position = transform.position;
+            transform.position = Camera.main.transform.position;
+
+            Debug.Log(transform + " posbhhblh = " + transform.position);
+            Debug.Log(Camera.main.transform + " posljhgljg = " + Camera.main.transform.position);
         }
     }
 }
