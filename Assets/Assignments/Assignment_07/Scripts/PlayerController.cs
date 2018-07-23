@@ -10,19 +10,26 @@ namespace A07_ank352
         public GameObject bulletPrefab;
         public Transform bulletSpawn;
 
+        private GameObject cam_Holder; //holds camera since GVR overrides camera's position
+        private Camera[] cams;
+        public Camera cam;
+        private int cam_counter = 0;
+
         public static A07_ank352.PlayerController Instance;
 
         private void Awake()
         {
             //Singleton
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else if (Instance != this)
+            if (isLocalPlayer)
             {
                 Destroy(this);
             }
+            else
+            {
+                Instance = this;
+            }
+            cams = Camera.allCameras;
+            cam_Holder = GameObject.Find("Cam_Holder"); //get parent object of camera
         }
 
         void Update()
@@ -31,24 +38,34 @@ namespace A07_ank352
             {
                 return;
             }
-            transform.rotation = Camera.main.transform.rotation;
+            //Switch cameras
+            foreach (Camera i in cams) {
+                i.enabled = false;
+            }
+            cam.enabled = true;
 
+            //Track rotation
+            transform.rotation = cam.transform.rotation;
+
+            //If trigger, fire and move
             if (Input.GetMouseButton(0))
             {
-                CmdFire();
+                CmdFire(); //fire projectiles
+
+                //Calculate where to move
                 Vector3 forward = transform.forward;
                 forward.y = 0;
-
                 Vector3 newPosition = forward * Time.deltaTime * 5.0f + transform.position;
 
                 //Constrain movement
                 newPosition.x = Mathf.Clamp(newPosition.x, -10, 10);
                 newPosition.z = Mathf.Clamp(newPosition.z, -10, 10);
 
-                transform.position = newPosition;
-                Camera.main.transform.position = transform.position;
+                //Update position
+                transform.position = newPosition; //move player
             }
-            Camera.main.transform.position = transform.position;
+            //Update camera (parent) position
+            cam_Holder.transform.position = transform.position;
         }
 
 
@@ -75,12 +92,9 @@ namespace A07_ank352
 
         public override void OnStartLocalPlayer()
         {
-            GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
-            //Camera.main.transform.position = transform.position;
-            transform.position = Camera.main.transform.position;
-
-            Debug.Log(transform + " posbhhblh = " + transform.position);
-            Debug.Log(Camera.main.transform + " posljhgljg = " + Camera.main.transform.position);
+            GetComponent<Renderer>().material.SetColor("_Color", Color.blue); //set color of local player to blue
+            cam = cams[cam_counter++]; //set new camera
+            cam_Holder.transform.position = transform.position; //set position of camera's parent object to player
         }
     }
 }

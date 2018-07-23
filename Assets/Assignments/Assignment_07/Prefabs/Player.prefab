@@ -451,9 +451,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1023503813248668, guid: ce5fa95bac6e3446d982941fc2afb524,
     type: 2}
   bulletSpawn: {fileID: 4473137262893546}
-  smooth: 2
-  tiltAngle: 30
-  camera: {fileID: 0}
+  m_MainCamera: {fileID: 0}
+  m_CameraTwo: {fileID: 0}
 --- !u!114 &114766192072261400
 MonoBehaviour:
   m_ObjectHideFlags: 1
